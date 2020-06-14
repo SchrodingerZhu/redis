@@ -47,13 +47,13 @@ endif
 
 hiredis: .make-prerequisites
 	@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
-	cd hiredis && $(MAKE) static $(HIREDIS_MAKE_FLAGS)
+	cd hiredis && $(MAKE) CFLAGS=-ffunction-sections static $(HIREDIS_MAKE_FLAGS)
 
 .PHONY: hiredis
 
 linenoise: .make-prerequisites
 	@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
-	cd linenoise && $(MAKE)
+	cd linenoise && $(MAKE) CFLAGS=-ffunction-sections
 
 .PHONY: linenoise
 
@@ -62,7 +62,7 @@ ifeq ($(uname_S),SunOS)
 	LUA_CFLAGS= -D__C99FEATURES__=1
 endif
 
-LUA_CFLAGS+= -O2 -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC='' $(CFLAGS)
+LUA_CFLAGS+= -ffunction-sections -O2 -Wall -DLUA_ANSI -DENABLE_CJSON_GLOBAL -DREDIS_STATIC='' $(CFLAGS)
 LUA_LDFLAGS+= $(LDFLAGS)
 # lua's Makefile defines AR="ar rcu", which is unusual, and makes it more
 # challenging to cross-compile lua (and redis).  These defines make it easier
@@ -76,7 +76,7 @@ lua: .make-prerequisites
 
 .PHONY: lua
 
-JEMALLOC_CFLAGS= -std=gnu99 -Wall -pipe -g3 -O3 -funroll-loops $(CFLAGS)
+JEMALLOC_CFLAGS= -ffunction-sections -std=gnu99 -Wall -pipe -g3 -O3 -funroll-loops $(CFLAGS)
 JEMALLOC_LDFLAGS= $(LDFLAGS)
 
 jemalloc: .make-prerequisites
@@ -88,18 +88,18 @@ jemalloc: .make-prerequisites
 
 mimalloc: .make-prerequisites
 	@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
-	cd mimalloc && cmake . -DCMAKE_BUILD_TYPE=Release -DMI_OVERRIDE=OFF && cmake --build . --target mimalloc-static
+	cd mimalloc && cmake . -DCMAKE_C_FLAGS="-ffunction-sections" -DCMAKE_BUILD_TYPE=Release -DMI_OVERRIDE=OFF && cmake --build . --target mimalloc-static
 
 .PHONY: mimalloc
 
 snmalloc: .make-prerequisites
 	@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
-	cd snmalloc && cmake . && cmake --build . --target snmallocshim-static
+	cd snmalloc && cmake . -DCMAKE_CXX_FLAGS="-ffunction-sections" && cmake --build . --target snmallocshim-static
 
 .PHONY: snmalloc
 
 snmalloc-1mib: .make-prerequisites
 	@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
-	cd snmalloc && cmake . && cmake --build . --target snmallocshim-1mib-static
+	cd snmalloc && cmake . -DCMAKE_CXX_FLAGS="-ffunction-sections" && cmake --build . --target snmallocshim-1mib-static
 
 .PHONY: snmalloc-1mib

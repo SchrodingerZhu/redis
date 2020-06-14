@@ -85,7 +85,7 @@ endif
 # Override default settings if possible
 -include .make-settings
 
-FINAL_CFLAGS= -emit-llvm -ffunction-sections $(STD) $(WARN) $(OPT) $(DEBUG) $(CFLAGS) $(REDIS_CFLAGS)
+FINAL_CFLAGS= -v -ffunction-sections $(STD) $(WARN) $(OPT) $(DEBUG) $(CFLAGS) $(REDIS_CFLAGS)
 FINAL_LDFLAGS=$(LDFLAGS) $(REDIS_LDFLAGS) $(DEBUG)
 FINAL_LIBS=-lm
 DEBUG=-g -ggdb
@@ -150,7 +150,7 @@ ifeq ($(uname_S),NetBSD)
 	FINAL_LIBS+= -lpthread -lexecinfo
 else
 	# All the other OSes (notably Linux)
-	FINAL_LDFLAGS+= -rdynamic
+	FINAL_LDFLAGS+= -v -rdynamic
 	FINAL_LIBS+=-ldl -pthread -lrt
 endif
 endif
@@ -161,7 +161,7 @@ endif
 endif
 endif
 # Include paths to dependencies
-FINAL_CFLAGS+= -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src
+FINAL_CFLAGS+= -ffunction-sections -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src
 
 # Determine systemd support and/or build preference (defaulting to auto-detection)
 BUILD_WITH_SYSTEMD=no
